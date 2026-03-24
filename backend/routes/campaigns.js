@@ -45,7 +45,7 @@ db.query(
 "SELECT * FROM campaigns ORDER BY created_at DESC",
 (err,result)=>{
 if(err) throw err
-res.json(result)
+res.json(result.rows)
 })
 
 })
@@ -103,7 +103,7 @@ fs.createReadStream(filePath)
     
     // Insert campaign
     db.query(
-      "INSERT INTO campaigns (name,type,message,recipients,recipients_file) VALUES (?,?,?,?,?)",
+      "INSERT INTO campaigns (name,type,message,recipients,recipients_file) VALUES ($1,$2,$3,$4,$5) RETURNING id",
       [name,type,message,recipients.length, req.file.filename],
       (err,result)=>{
         if(err) {
@@ -111,7 +111,7 @@ fs.createReadStream(filePath)
           return res.status(500).json({message: "Error creating campaign: " + err.message});
         }
         
-        console.log('Campaign inserted successfully:', result.insertId);
+        console.log('Campaign inserted successfully:', result.rows[0].id);
         
         // Insert contacts into contacts table only if importToContacts is true
         const shouldImportContacts = importToContacts === 'true' || importToContacts === true;
@@ -119,11 +119,11 @@ fs.createReadStream(filePath)
         
         if (shouldImportContacts && recipients.length > 0) {
           const contactValues = recipients.map(r => [r.name, r.phone, r.email, 'lead']);
-          const placeholders = contactValues.map(() => '(?,?,?,?)').join(',');
+          const placeholders = contactValues.map((_, index) => `($${index * 4 + 1},$${index * 4 + 2},$${index * 4 + 3},$${index * 4 + 4})`).join(',');
           const values = contactValues.flat();
           
           db.query(
-            `INSERT IGNORE INTO contacts (name, phone, email, category) VALUES ${placeholders}`,
+            `INSERT INTO contacts (name, phone, email, category) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
             values,
             (contactErr) => {
               if (contactErr) {
@@ -140,7 +140,7 @@ fs.createReadStream(filePath)
         res.json({
           message:"Campaign created successfully",
           recipients: recipients.length,
-          campaignId: result.insertId,
+          campaignId: result.rows[0].id,
           sampleMessages: processedMessages.slice(0, 3) // Return first 3 processed messages as examples
         });
       }

@@ -1,15 +1,23 @@
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 
-const db = mysql.createConnection({
- host: "localhost",
- user: "root",
- password: "root",
- database: "crm_system"
+const db = new Pool({
+  host: process.env.DB_HOST || "localhost",
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER || "postgres",
+  password: process.env.DB_PASSWORD || "password",
+  database: process.env.DB_NAME || "crm_system",
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
 db.connect(err => {
- if (err) throw err;
- console.log("MySQL Connected");
+ if (err) {
+   console.error("PostgreSQL connection error:", err);
+   throw err;
+ }
+ console.log("PostgreSQL Connected");
 });
 
 module.exports = db;

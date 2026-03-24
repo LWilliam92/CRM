@@ -9,6 +9,10 @@ const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contacts");
 const campaignRoutes = require("./routes/campaigns");
 const aiRoutes = require("./routes/ai");
+const facebookRoutes = require("./routes/facebook");
+const messengerRoutes = require("./routes/messenger");
+const ticketsRoutes = require("./routes/tickets");
+const settingsRoutes = require("./routes/settings");
 
 const app = express();
 
@@ -39,6 +43,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/facebook", facebookRoutes);
+app.use("/api/messenger", messengerRoutes);
+app.use("/api/tickets", ticketsRoutes);
+app.use("/api/settings", settingsRoutes);
 
 // Dashboard statistics
 app.get("/api/dashboard", (req, res) => {
@@ -49,25 +57,25 @@ app.get("/api/dashboard", (req, res) => {
 
         if (err) return res.status(500).json(err);
 
-        data.contacts = result[0].contacts;
+        data.contacts = result.rows[0].contacts;
 
         db.query("SELECT COUNT(*) AS campaigns FROM campaigns", (err, result) => {
 
             if (err) return res.status(500).json(err);
 
-            data.campaigns = result[0].campaigns;
+            data.campaigns = result.rows[0].campaigns;
 
             db.query("SELECT COUNT(*) AS whatsapp FROM campaigns WHERE type='whatsapp'", (err, result) => {
 
                 if (err) return res.status(500).json(err);
 
-                data.whatsapp = result[0].whatsapp;
+                data.whatsapp = result.rows[0].whatsapp;
 
                 db.query("SELECT COUNT(*) AS sms FROM campaigns WHERE type='sms'", (err, result) => {
 
                     if (err) return res.status(500).json(err);
 
-                    data.sms = result[0].sms;
+                    data.sms = result.rows[0].sms;
 
                     res.json(data);
 
@@ -83,6 +91,6 @@ app.get("/api/dashboard", (req, res) => {
 
 
 // Start server
-app.listen(5000, () => {
-    console.log("CRM Server running on port 5000");
+app.listen(5001, () => {
+    console.log("CRM Server running on port 5001");
 });

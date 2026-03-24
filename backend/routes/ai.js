@@ -17,7 +17,7 @@ router.post("/analyze-contacts", async (req, res) => {
         return res.status(500).json({ message: "Error fetching contacts" });
       }
 
-      if (contacts.length === 0) {
+      if (contacts.rows.length === 0) {
         return res.json({
           insights: null,
           recommendations: [],
@@ -26,7 +26,7 @@ router.post("/analyze-contacts", async (req, res) => {
       }
 
       // Perform AI analysis
-      const analysis = performContactAnalysis(contacts);
+      const analysis = performContactAnalysis(contacts.rows);
       
       res.json({
         insights: analysis.insights,
@@ -49,13 +49,22 @@ router.post("/score-contacts", async (req, res) => {
       return res.status(400).json({ message: "Invalid contact IDs" });
     }
 
-    const placeholders = contactIds.map(() => '?').join(',');
+    const placeholders = contactIds.map((_, index) => `$${index + 1}`).join(',');
     const query = `SELECT * FROM contacts WHERE id IN (${placeholders})`;
     
-    db.query(query, contactIds, (err, contacts) => {
+    db.query(query, contactIds, (err, result) => {
       if (err) {
         console.error("Error fetching contacts for scoring:", err);
         return res.status(500).json({ message: "Error fetching contacts" });
+      }
+
+      const contacts = result.rows;
+
+      if (contacts.length === 0) {
+        return res.json({
+          scoredContacts: [],
+          message: "No contacts found for scoring"
+        });
       }
 
       const scoredContacts = contacts.map(contact => ({
@@ -81,13 +90,21 @@ router.post("/predict-conversions", async (req, res) => {
   try {
     const query = "SELECT * FROM contacts WHERE category IN ('lead', 'prospect') ORDER BY created_at DESC";
     
-    db.query(query, (err, contacts) => {
+    db.query(query, ['lead', 'prospect'], (err, contacts) => {
       if (err) {
         console.error("Error fetching contacts for prediction:", err);
         return res.status(500).json({ message: "Error fetching contacts" });
       }
 
-      const predictions = contacts.map(contact => ({
+      if (contacts.rows.length === 0) {
+        return res.json({
+          predictions: [],
+          totalAnalyzed: 0,
+          message: "No contacts available for prediction"
+        });
+      }
+
+      const predictions = contacts.rows.map(contact => ({
         contactId: contact.id,
         contactName: contact.name,
         conversionProbability: calculateConversionProbability(contact),
@@ -357,7 +374,7 @@ router.post("/chat", async (req, res) => {
       const contactsResult = await new Promise((resolve, reject) => {
         db.query(contactsQuery, (err, result) => {
           if (err) reject(err);
-          else resolve(result);
+          else resolve(result.rows);
         });
       });
       contactData = contactsResult;

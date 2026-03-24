@@ -5,8 +5,13 @@ import Dashboard from "./pages/Dashboard";
 import CampaignHistory from "./pages/CampaignHistory";
 import Contacts from "./pages/Contacts";
 import LeadManagement from "./pages/LeadManagement";
+import TicketManagement from "./pages/TicketManagement";
+import Settings from "./pages/Settings";
+import FacebookLeadAds from "./pages/FacebookLeadAds";
+import FacebookIntegration from "./components/FacebookIntegration";
 import FloatingAIAssistant from "./components/FloatingAIAssistant";
 import axios from "axios";
+import { api } from "./api";
 
 function App() {
   const [contacts, setContacts] = useState([]);
@@ -47,7 +52,7 @@ function App() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await axios.get("http://localhost:5000/api/contacts", {
+      const res = await axios.get(api.contacts.getAll, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setContacts(res.data);
@@ -65,6 +70,10 @@ function App() {
         <Route path="/campaign-history" element={<CampaignHistory />} />
         <Route path="/contacts" element={<Contacts />} />
         <Route path="/leads" element={<LeadManagement />} />
+        <Route path="/tickets" element={<TicketManagement />} />
+        <Route path="/facebook-leads" element={<FacebookLeadAds />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/facebook" element={<FacebookIntegration />} />
       </Routes>
       
       {/* Floating AI Assistant - only show when authenticated */}

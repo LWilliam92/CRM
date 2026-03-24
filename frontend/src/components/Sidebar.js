@@ -6,14 +6,16 @@ export default function Sidebar() {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: "📊", shortcut: "Ctrl+D" },
-    { name: "Contacts", path: "/contacts", icon: "👥", shortcut: "Ctrl+C" },
-    { name: "Lead Management", path: "/leads", icon: "🎯", shortcut: "Ctrl+L" },
-    { name: "Categories", path: "/categories", icon: "📁", shortcut: "Ctrl+G" },
-    { name: "Campaign History", path: "/campaign-history", icon: "📋", shortcut: "Ctrl+H" },
-    { name: "Reports", path: "/reports", icon: "📈", shortcut: "Ctrl+R" },
-    { name: "Settings", path: "/settings", icon: "⚙️", shortcut: "Ctrl+S" },
-    { name: "Logout", path: "/logout", icon: "🚪", shortcut: "" }
+    { name: "Dashboard", path: "/dashboard", icon: "", shortcut: "Ctrl+D" },
+    { name: "Contacts", path: "/contacts", icon: "", shortcut: "Ctrl+C" },
+    { name: "Ticket Management", path: "/tickets", icon: "", shortcut: "Ctrl+T" },
+    { name: "Lead Management", path: "/leads", icon: "", shortcut: "Ctrl+L" },
+    { name: "Facebook Lead Ads", path: "/facebook-leads", icon: "", shortcut: "Ctrl+F" },
+    { name: "Categories", path: "/categories", icon: "", shortcut: "Ctrl+G" },
+    { name: "Campaign History", path: "/campaign-history", icon: "", shortcut: "Ctrl+H" },
+    { name: "Reports", path: "/reports", icon: "", shortcut: "Ctrl+R" },
+    { name: "Settings", path: "/settings", icon: "", shortcut: "Ctrl+S" },
+    { name: "Logout", path: "/logout", icon: "", shortcut: "" }
   ];
 
   const handleNavigation = (path) => {

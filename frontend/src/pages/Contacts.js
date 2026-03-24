@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { api } from "../api";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
@@ -38,7 +39,7 @@ export default function Contacts() {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/contacts", {
+      const res = await axios.get(api.contacts.getAll, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setContacts(res.data);
@@ -74,7 +75,7 @@ export default function Contacts() {
       if (editingContact) {
         // Update existing contact
         await axios.put(
-          `http://localhost:5000/api/contacts/${editingContact.id}`,
+          api.contacts.update(editingContact.id),
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -82,7 +83,7 @@ export default function Contacts() {
       } else {
         // Create new contact
         await axios.post(
-          "http://localhost:5000/api/contacts",
+          api.contacts.create,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -119,7 +120,7 @@ export default function Contacts() {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/api/contacts/${deleteConfirm.contactId}`,
+        api.contacts.delete(deleteConfirm.contactId),
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Contact deleted successfully!");

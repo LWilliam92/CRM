@@ -7,7 +7,7 @@ async function setupUser() {
     console.log("Hashed password:", hashedPassword);
     
     db.query(
-      "UPDATE users SET password = ? WHERE email = 'admin@crm.com'",
+      "UPDATE users SET password = $1 WHERE email = 'admin@crm.com'",
       [hashedPassword],
       (err, result) => {
         if (err) {

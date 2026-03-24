@@ -9,18 +9,18 @@ exports.login = async (req, res) => {
     return res.status(400).json("Email and password are required");
   }
 
-  db.query("SELECT * FROM users WHERE email=?", [email], async (err, result) => {
+  db.query("SELECT * FROM users WHERE email=$1", [email], async (err, result) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json("Database error");
     }
 
-    if (result.length === 0) {
+    if (result.rows.length === 0) {
       console.log("User not found for email:", email);
       return res.status(400).json("User not found");
     }
 
-    const user = result[0];
+    const user = result.rows[0];
     console.log("Found user:", { id: user.id, email: user.email });
 
     try {

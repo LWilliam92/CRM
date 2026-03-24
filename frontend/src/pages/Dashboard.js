@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { api } from "../api";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import CampaignCard from "../components/CampaignCard";
@@ -24,7 +25,7 @@ export default function Dashboard() {
           return;
         }
 
-        const res = await axios.get("http://localhost:5000/api/dashboard", {
+      const res = await axios.get(api.dashboard.getStats, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStats(res.data);
